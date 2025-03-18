@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend  # Diretório do frontend
+    ports:
+      - "80:80"  # Expõe a porta 80 do contêiner para a porta 80 do host
+    networks:
+      - todo-net
+    depends_on:
+      - backend  # Garante que o backend esteja rodando antes de subir o frontend
+
+  backend:
+    build:
+      context: ./backend  # Diretório do backend
+    ports:
+      - "5000:5000"  # Expõe a porta 5000 do contêiner para a porta 5000 do host
+    networks:
+      - todo-net
+    depends_on:
+      - mongo  # Garante que o MongoDB esteja rodando antes de iniciar o backend
+
+  mongo:
+    build:
+      context: ./banco-de-dados  # Diretório do backend
+    container_name: mongo-todo
+    ports:
+      - "27017:27017"
+    networks:
+      - todo-net
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=rootpassword
+      - MONGO_INITDB_DATABASE=todo-app
+
+
+networks:
+  todo-net:
+    driver: bridge
